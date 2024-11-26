@@ -29,45 +29,23 @@ class GeminiRewriter:
         that it is unique and free from plagiarism. Ensure the rewritten text is grammatically correct and 
         maintains the original meaning."""
         
-    async def rewrite_text(self, text: str, max_retries: int = 3, retry_delay: int = 2) -> Optional[str]:
-        """
-        Rewrite the given text using Gemini AI.
-        
-        Args:
-            text (str): The text to be rewritten
-            max_retries (int): Maximum number of retry attempts
-            retry_delay (int): Delay between retries in seconds
-            
-        Returns:
-            Optional[str]: The rewritten text, or None if the operation fails
-        """
+    async def rewrite_text(self, text: str) -> str:
+        """Rewrite the given text."""
         if not text or not text.strip():
             raise ValueError("Input text cannot be empty")
+
+        try:
+            full_prompt = f"{self.system_prompt}\n\nOriginal text:\n{text}\n\nRewritten text:"
+            response = await self.model.generate_content_async(full_prompt)
             
-        for attempt in range(max_retries):
-            try:
-                # Combine system prompt with user's text
-                full_prompt = f"{self.system_prompt}\n\nOriginal text:\n{text}\n\nRewritten text:"
+            if response and response.text:
+                return response.text.strip()
                 
-                # Generate the response
-                response = await self.model.generate_content_async(full_prompt)
-                
-                if response and response.text:
-                    logger.info("Successfully rewrote the text")
-                    return response.text.strip()
-                    
-                raise Exception("No response generated")
-                
-            except Exception as e:
-                logger.error(f"Attempt {attempt + 1} failed: {str(e)}")
-                if attempt < max_retries - 1:
-                    logger.info(f"Retrying in {retry_delay} seconds...")
-                    time.sleep(retry_delay)
-                else:
-                    logger.error("Max retries reached. Operation failed.")
-                    raise
-                    
-        return None
+            raise Exception("No response generated")
+            
+        except Exception as e:
+            logger.error(f"Failed to rewrite text: {str(e)}")
+            raise
         
     def check_similarity(self, original_text: str, rewritten_text: str) -> Dict[str, Any]:
         """
