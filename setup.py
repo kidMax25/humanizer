@@ -4,7 +4,7 @@ setup(
     name="gemini-rewriter",
     version="1.0.0",
     description="Text rewriting tool using Google's Gemini AI",
-    author="Your Name",
+    author="devMax",
     packages=find_packages(),
     install_requires=[
         "google-generativeai>=0.3.0",

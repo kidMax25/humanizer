@@ -1,7 +1,7 @@
 import asyncio
 import os
 from dotenv import load_dotenv
-from gemini_rewriter.rewriter import GeminiRewriter
+from gemini_rewriter import GeminiRewriter
 
 async def main():
     # Load environment variables
